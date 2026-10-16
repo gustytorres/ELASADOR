@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Menú · El Asador</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+:root{--bg:#faf6f0;--card:#fff;--ink:#2a1d17;--mute:#7a6a60;--accent:#c2410c;--line:#e8ddd0;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1210;--card:#261a16;--ink:#f5ebe0;--mute:#b3a195;--accent:#f97316;--line:#3a2a24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1a1210;--card:#261a16;--ink:#f5ebe0;--mute:#b3a195;--accent:#f97316;--line:#3a2a24;color-scheme:dark}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 56px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;line-height:1.4}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+header{text-align:center;padding:28px 20px 12px}
+h1{margin:0;font-size:30px;letter-spacing:.5px}
+.sub{color:var(--mute);margin:6px 0 0;font-size:14px;font-family:system-ui,sans-serif}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);display:flex;gap:8px;overflow-x:auto;padding:10px 16px;font-family:system-ui,sans-serif}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:14px;background:var(--card)}
+main{max-width:640px;margin:0 auto;padding:8px 16px 40px}
+h2{color:var(--accent);font-size:22px;margin:28px 0 8px;border-bottom:2px solid var(--accent);padding-bottom:4px}
+.item{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.item b{font-size:17px;font-weight:600}
+.item p{margin:2px 0 0;color:var(--mute);font-size:14px;font-family:system-ui,sans-serif}
+.price{white-space:nowrap;font-weight:600;font-family:system-ui,sans-serif}
+.note{text-align:center;color:var(--mute);font-size:13px;font-family:system-ui,sans-serif;margin:24px 0 8px}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+button,.btn{font-family:system-ui,sans-serif;font-size:15px;border:0;border-radius:10px;padding:11px 18px;background:var(--accent);color:#fff;text-decoration:none;cursor:pointer}
+button.alt{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+#qr{display:none;text-align:center;padding:16px;background:#fff;border-radius:12px;margin:12px auto;width:max-content}
+#qr svg,#qr img{display:block;width:200px;height:200px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔥 El Asador</h1>
+  <p class="sub">Menú provisorio · ¡Recién abrimos!</p>
+</header>
+<nav id="nav"></nav>
+<main>
+  <div id="menu"></div>
+  <p class="note" id="deliv">🛵 Hacemos delivery</p>
+  <div class="btns">
+    <a class="btn" id="wa" style="display:none" target="_blank" rel="noopener">Pedir por WhatsApp</a>
+    <button class="alt" id="shareBtn">Compartir / QR</button>
+  </div>
+  <div id="qr"></div>
+</main>
+<script>
+// ====== DATOS EDITABLES ======
+// price: dejar "" para no mostrar precio. Ej: "$12.000"
+const WHATSAPP = ""; // ej: "5491122334455" (sin + ni espacios)
+const MENU = [
+  {cat:"Parrilla", items:[
+    {n:"Vacío", d:"Con guarnición", price:"$35.000"},
+    {n:"Costilla", d:"Con guarnición", price:"$32.000"},
+    {n:"Pollo", d:"Con guarnición", price:"$15.000"}
+  ]},
+  {cat:"Chorizo y morcilla", items:[
+    {n:"Chorizo x3", d:"", price:"$5.000"},
+    {n:"Morcilla x3", d:"", price:"$5.500"}
+  ]},
+  {cat:"Matambrito", items:[
+    {n:"Matambrito de cerdo", d:"", price:"$21.000"}
+  ]}
+];
+// ====== FIN DATOS ======
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const slug=s=>"c-"+s.toLowerCase().replace(/[^a-z0-9]+/g,"-");
+document.getElementById("nav").innerHTML=MENU.map(c=>`<a href="#${slug(c.cat)}">${esc(c.cat)}</a>`).join("");
+document.getElementById("menu").innerHTML=MENU.map(c=>`<section id="${slug(c.cat)}"><h2>${esc(c.cat)}</h2>`+c.items.map(i=>`<div class="item"><div><b>${esc(i.n)}</b>${i.d?`<p>${esc(i.d)}</p>`:""}</div>${i.price?`<span class="price">${esc(i.price)}</span>`:""}</div>`).join("")+`</section>`).join("");
+if(WHATSAPP){const a=document.getElementById("wa");a.style.display="";a.href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent("Hola! Quiero hacer un pedido");}
+document.getElementById("shareBtn").onclick=async()=>{
+  const url=location.href,box=document.getElementById("qr");
+  try{ if(navigator.share){await navigator.share({title:document.title,url});} }catch(e){}
+  try{
+    const q=qrcode(0,"M");q.addData(url);q.make();
+    box.innerHTML=q.createSvgTag({cellSize:4,margin:0});
+    box.style.display="block";
+  }catch(e){ box.textContent=url; box.style.display="block"; }
+};
+</script>
+</body>
+</html>
